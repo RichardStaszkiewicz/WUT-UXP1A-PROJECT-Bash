@@ -36,7 +36,7 @@ local        { printf("local\n"); return LOCAL; }
 
 int yywrap(){}
 int main(){ 
-    yy_scan_string("`to jest test ` sdxaxs `xasxsa`");
+    yy_scan_string("export variable = `exec ./test.sh`");
 
     int atom;
     while((atom = yylex())>0)
