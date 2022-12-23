@@ -1,6 +1,6 @@
 %{
     enum TokenType {
-        PIPE, FROM, TO, EQUAL, EXPORT, LOCAL, IDENTIFIER, WORD, PATH, VARIABLE, QUOTE, INVQUOTE, UNKNOWN
+        PIPE=1, FROM, TO, EQUAL, EXPORT, LOCAL, IDENTIFIER, WORD, PATH, VARIABLE, QUOTE, INVQUOTE, UNKNOWN
     };
 %}
 
@@ -18,8 +18,8 @@ INVQUOTE   \`[^\`]*\`
 
 {WS}      
 "|"          { printf("pipe\n"); return PIPE; }
-">"          { printf("redirect to\n"); return TO;  }
-"<"          { printf("redirect from\n"); return FROM; }
+"<"          { printf("redirect to\n"); return TO;  }
+">"          { printf("redirect from\n"); return FROM; }
 "="          { printf("equal\n"); return EQUAL; }
 export       { printf("export\n"); return EXPORT; }
 local        { printf("local\n"); return LOCAL; }
@@ -35,6 +35,8 @@ local        { printf("local\n"); return LOCAL; }
 %%
 
 int yywrap(){}
+
+/*
 int main(){ 
     yy_scan_string("export variable = `exec ./test.sh`");
 
@@ -47,3 +49,4 @@ int main(){
     }
     return 0;
 }
+*/

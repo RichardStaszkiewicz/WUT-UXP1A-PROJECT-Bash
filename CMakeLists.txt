@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(FLAGS -std=c++17 -O3 -Wall) #-g
+set(FLAGS -std=c++17 -Wall) #-g
 set(CMAKE_CXX_COMPILER g++)
 
 add_compile_options(${FLAGS})
