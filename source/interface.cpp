@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <filesystem>
+#include "utils.hpp"
 
 Interface::Interface()
 {
@@ -17,6 +18,11 @@ void Interface::run_interactive()
     {
         std::cout << "(" << current_dir << ")$ ";
         getline(std::cin, parsable_string);
-        std::cout << parsable_string;
+        execute_parsable_string(parsable_string);
     }
+}
+
+void Interface::run_batch(std::string parsable)
+{
+    execute_parsable_string(parsable);
 }

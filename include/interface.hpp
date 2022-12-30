@@ -10,8 +10,8 @@ private:
 public:
     Interface();
     Interface(std::string current_dir);
-    void run_interactive();
-    //void run_batch();
+    void run_interactive();                     // ./program
+    void run_batch(std::string parsable);       // ./program "{requested command}"
     //~Interface() = default;
 };
 

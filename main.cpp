@@ -21,6 +21,10 @@ int main(int argc, char *argv[])
             break;
         default:
             std::cout << "batch" <<std::endl;
+            std::string command;
+            for(int i = 1; i < argc; i++) command += argv[i];
+            terminal.run_batch(command);
+            break;
     }
 
     return 0;
