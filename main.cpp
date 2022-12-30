@@ -6,29 +6,22 @@
 #include "parser.hpp"
 #include "grammar.hpp"
 #include "errors.hpp"
+#include "interface.hpp"
+// jak są problemy z linkowaniem nowych plików - po prostu wywołajcie Ctrl+S na CMakeLists.txt nie zmieniając niczego
+// tzn, po prostu rekonfigurujcie CMakeCache
 
-int main()
+int main(int argc, char *argv[])
 {
-    // Parser parser("ls -al > /home/jakub/Desktop/testtesttesttest.txt \n");
-    // Parser parser("cat < /home/jakub/Desktop/redirect_from.txt \n");
-    // Parser parser("cat < /home/jakub/Desktop/redirect_from.txt | grep TEST \n");
-    // Parser parser("ls -al | grep CMake | sort > /home/jakub/Desktop/example_output.txt \n");
-    // Parser parser("local variable = $test\n");
-
-    Parser parser("echo `ls -al` | grep CMake | grep 7");
-
-    std::map<std::string, std::string> locals{};
-    Interpreter interpreter = Interpreter(locals);
-
-    try
+    Interface terminal;
+    switch(argc)
     {
-        auto ast = parser.parse();
-        ast->accept(interpreter);
-    }
-    catch (ShellError &e)
-    {
-        exit(1);
+        case 1:
+            std::cout << "interactive" <<std::endl;
+            terminal.run_interactive();
+            break;
+        default:
+            std::cout << "batch" <<std::endl;
     }
 
-    exit(0);
+    return 0;
 }
