@@ -1,5 +1,6 @@
 #include "parser.hpp"
 #include "grammar.hpp"
+#include "errors.hpp"
 #include <iostream>
 
 #include "lex.yy.c"
@@ -14,32 +15,36 @@ Parser::~Parser()
 {
 }
 
-GrammarRule* Parser::parse()
+GrammarRule *Parser::parse()
 {
-    GrammarRule* request = nullptr;
+    GrammarRule *request = nullptr;
 
     if ((request = parseAssignment()) != nullptr)
     {
         return request;
     }
 
-	if ((request = parsePipe()) != nullptr)
+    if ((request = parsePipe()) != nullptr)
     {
         return request;
     }
 
-	// throw
     return nullptr;
 }
 
-Assignment* Parser::parseAssignment()
+Assignment *Parser::parseAssignment()
 {
     AssignmentType type;
-    if (current == LOCAL) {
+    if (current == LOCAL)
+    {
         type = AssignmentType::LOCAL;
-    } else if (current == EXPORT) {
+    }
+    else if (current == EXPORT)
+    {
         type = AssignmentType::EXPORT;
-    } else {
+    }
+    else
+    {
         return nullptr;
     }
 
@@ -47,114 +52,119 @@ Assignment* Parser::parseAssignment()
     std::string name = yytext;
 
     advance();
-    // check equal an throw
+    if (strcmp(yytext, "=") != 0)
+    {
+        throw ParseError("Invalid input - '=' sign expected");
+    }
 
     advance();
-    Assignable* assignable = parseAssignable();
+    Assignable *assignable = parseAssignable();
 
-	if (assignable == nullptr)
-	{
-		// throw
-	}
-    
+    if (assignable == nullptr)
+    {
+        throw ParseError("Invalid input - assignable expression expected");
+    }
+
     return new Assignment(type, name, assignable);
 }
 
-Assignable* Parser::parseAssignable()
+Assignable *Parser::parseAssignable()
 {
     std::string value = yytext;
-    
-    AssignableType type; 
+
+    AssignableType type;
     if (current == WORD || current == IDENTIFIER)
     {
         type = AssignableType::WORD;
-    } 
-    else if(current == VARIABLE)
+    }
+    else if (current == VARIABLE)
     {
         type = AssignableType::VARIABLE;
         value.erase(0, 1);
-    }    
-    else if(current == QUOTE)
+    }
+    else if (current == QUOTE)
     {
         type = AssignableType::QUOTE;
         value.erase(0, 1);
         value.pop_back();
     }
-    else if(current == INVQUOTE)
+    else if (current == INVQUOTE)
     {
         type = AssignableType::QUOTE;
         value.erase(0, 1);
         value.pop_back();
     }
-    else 
+    else
     {
         return nullptr;
     }
 
-	advance();
+    advance();
     return new Assignable(type, value);
 }
 
-Pipe* Parser::parsePipe()
+Pipe *Parser::parsePipe()
 {
-	std::vector<Command*> commands;
-	commands.push_back(parseCommand());
-	
-	while (current == PIPE)
-	{
-		advance();
-		commands.push_back(parseCommand());
-	}
-	
-	return new Pipe(commands);
-}
+    std::vector<Command *> commands;
+    
+    commands.push_back(parseCommand());
 
-Command* Parser::parseCommand()
-{
-    if (current != IDENTIFIER  && current != WORD && current != PATH)
+    while (current == PIPE)
     {
-        //throw
-    } 
-	
-	std::string program = yytext;
-	advance();
+        advance();
+        commands.push_back(parseCommand());
+    }
 
-	Assignable* argument;
-	std::vector<Assignable*> arguments;
-	while ((argument = parseAssignable()) != nullptr)
-	{
-		arguments.push_back(argument);
-	}
-
-	std::string* from = nullptr;
-	std::string* to = nullptr;
-
-	for (size_t i = 0; i < 2; i++)
-	{
-		if (current == FROM)
-		{
-			advance();
-			from = new std::string(yytext);
-			advance();
-		}
-
-		if (current == TO)
-		{
-			advance();
-			to = new std::string(yytext);
-			advance();
-		}
-	}
-
-	return new Command(program, arguments, from, to);
+    return new Pipe(commands);
 }
 
-void Parser::advance() 
-{ 
-    current = yylex(); 
+Command *Parser::parseCommand()
+{
+    if (current != IDENTIFIER && current != WORD && current != PATH)
+    {
+        throw ParseError("Parse error - WORD expected");
+    }
+
+    std::string program = yytext;
+    advance();
+
+    Assignable *argument;
+    std::vector<Assignable *> arguments;
+    while ((argument = parseAssignable()) != nullptr)
+    {
+        arguments.push_back(argument);
+    }
+
+    std::string *from = nullptr;
+    std::string *to = nullptr;
+
+    for (size_t i = 0; i < 2; i++)
+    {
+        if (current == FROM)
+        {
+            advance();
+            from = new std::string(yytext);
+            advance();
+        }
+
+        if (current == TO)
+        {
+            advance();
+            to = new std::string(yytext);
+            advance();
+        }
+    }
+
+    return new Command(program, arguments, from, to);
 }
 
+void Parser::advance()
+{
+    current = yylex();
 
-
-
-
+    if (current == UNKNOWN)
+    {
+        throw ParseError("Parsing error - Unknown token");
+    }
+    
+}

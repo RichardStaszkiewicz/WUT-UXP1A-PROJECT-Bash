@@ -7,8 +7,9 @@
 WS         [ \t]+
 DIGIT      [0-9]
 LETTER     [a-zA-Z_]
+LETTERDOT  [a-zA-Z_.]
 IDENTIFIER {LETTER}({LETTER}|{DIGIT})*
-WORD       ({LETTER}|{DIGIT})*
+WORD       ({LETTERDOT}|{DIGIT})*
 PATH       ("./")?({WORD}"/")*{WORD}
 VARIABLE   "$"{LETTER}({LETTER}|{DIGIT})*
 QUOTE      "'"[^"'"]*"'"
