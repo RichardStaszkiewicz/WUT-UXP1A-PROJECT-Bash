@@ -12,8 +12,14 @@ int main()
     std::cout << "Hello world!" << std::endl;
 
     // Parser parser("ls -al > /home/jakub/Desktop/redirect_from.txt \n");
-    Parser parser("cat < /home/jakub/Desktop/redirect_from.txt \n");
+    // Parser parser("cat < /home/jakub/Desktop/redirect_from.txt \n");
+    // Parser parser("cat < /home/jakub/Desktop/redirect_from.txt | grep TEST \n");
     
+    // Parser parser("ls -al | grep CMake | sort > /home/jakub/Desktop/example_output.txt \n");
+
+    Parser parser("echo `ls -al`");
+
+
     //Parser parser("local variable = $test\n");
     // Parser parser("abc.sh sav asd < 435534 | cds csd | ncds");
 

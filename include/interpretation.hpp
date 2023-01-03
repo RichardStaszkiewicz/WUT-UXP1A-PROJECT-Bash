@@ -17,7 +17,7 @@ private:
 
     std::string evaluate_assignable(const Assignable &assignable);
     
-    pid_t execute_command(const Command& command);
+    pid_t execute_command(const Command& command, int input_pipe=-1, int output_pipe=-1);
     std::vector<std::string> evaluate_arguments(const Command& command);
 
 public:

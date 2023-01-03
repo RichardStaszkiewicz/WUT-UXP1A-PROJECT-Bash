@@ -90,7 +90,7 @@ Assignable *Parser::parseAssignable()
     }
     else if (current == INVQUOTE)
     {
-        type = AssignableType::QUOTE;
+        type = AssignableType::INVQUOTE;
         value.erase(0, 1);
         value.pop_back();
     }

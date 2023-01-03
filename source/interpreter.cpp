@@ -4,9 +4,12 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 #include "grammar.hpp"
 #include "interpretation.hpp"
 #include "errors.hpp"
+#include "parser.hpp"
+#include "grammar.hpp"
 
 Interpreter::Interpreter(std::map<std::string, std::string> &locals) : locals(locals)
 {
@@ -44,8 +47,31 @@ std::string Interpreter::evaluate_assignable(const Assignable &assignable)
     }
     else if (assignable.type == AssignableType::INVQUOTE)
     {
-        // TODO: compute invquote
-        return "";
+        Parser parser(assignable.value);
+
+        GrammarRule *ast = parser.parse();
+
+        int pipe_pair[2];
+        pipe(pipe_pair);
+
+        int old_out = dup(1);
+        close(1);
+        dup2(pipe_pair[1], 1);
+        close(pipe_pair[1]);
+
+        ast->accept(*this);
+        
+        close(1);
+        dup2(old_out, 1);
+        close(old_out);
+
+        char buffer[1000];
+        read(pipe_pair[0], buffer, 1000);
+
+        close(pipe_pair[0]);
+        delete ast;
+        
+        return std::string(buffer);
     }
 
     return "";
@@ -67,7 +93,7 @@ void Interpreter::execute(Assignment &assignment)
     }
 }
 
-pid_t Interpreter::execute_command(const Command &command)
+pid_t Interpreter::execute_command(const Command &command, int input_pipe, int output_pipe)
 {
     // arguments
     auto arguments = evaluate_arguments(command);
@@ -112,9 +138,21 @@ pid_t Interpreter::execute_command(const Command &command)
     if (pid == 0)
     {
         // pipes
-        // TODO: pipes links
+        if (input_pipe > 1)
+        {
+            close(0);
+            dup2(input_pipe, 0);
+            close(input_pipe);
+        }
 
-        // redirecions 
+        if (output_pipe > 1)
+        {
+            close(1);
+            dup2(output_pipe, 1);
+            close(output_pipe);
+        }
+
+        // redirecions
         if (redirect_from > 1)
         {
             close(1);
@@ -132,6 +170,17 @@ pid_t Interpreter::execute_command(const Command &command)
         execvp(command.program.c_str(), args);
         std::cerr << "Program " << command.program << " not found" << std::endl;
         exit(1);
+    }
+
+    // close pipes
+    if (input_pipe > 1)
+    {
+        close(input_pipe);
+    }
+
+    if (output_pipe > 1)
+    {
+        close(output_pipe);
     }
 
     // close redirections
@@ -160,13 +209,36 @@ std::vector<std::string> Interpreter::evaluate_arguments(const Command &command)
     return arguments;
 }
 
-void Interpreter::execute(Pipe &pipe)
+void Interpreter::execute(Pipe &pipe_obj)
 {
-    std::vector<pid_t> pids(pipe.commands.size());
+    std::vector<pid_t> pids(pipe_obj.commands.size(), -1);
 
-    if (pipe.commands.size() == 1)
+    if (pipe_obj.commands.size() == 1)
     {
-        pids.push_back(execute_command(*pipe.commands[0]));
+        pids.push_back(execute_command(*pipe_obj.commands[0]));
+    }
+    else
+    {
+        int commands_count = pipe_obj.commands.size();
+
+        int pipe_pairs[commands_count - 1][2];
+
+        // initiate pipes
+        for (int i = 0; i < commands_count - 1; i++)
+        {
+            pipe(pipe_pairs[i]);
+            // TODO: check if return not 0. If 0 close created before and, write error and throw
+        }
+
+        // run commands
+        pids.push_back(execute_command(*pipe_obj.commands[0], -1, pipe_pairs[0][1]));
+
+        for (int i = 1; i < commands_count - 1; i++)
+        {
+            pids.push_back(execute_command(*pipe_obj.commands[i], pipe_pairs[i - 1][0], pipe_pairs[i][1]));
+        }
+
+        pids.push_back(execute_command(*pipe_obj.commands[commands_count - 1], pipe_pairs[commands_count - 2][0], -1));
     }
 
     for (auto pid : pids)
