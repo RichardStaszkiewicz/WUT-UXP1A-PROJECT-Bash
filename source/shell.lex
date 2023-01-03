@@ -10,7 +10,7 @@ LETTER     [a-zA-Z_]
 LETTERDOT  [a-zA-Z_.-]
 IDENTIFIER {LETTER}({LETTER}|{DIGIT})*
 WORD       ({LETTERDOT}|{DIGIT})*
-PATH       ("./")?({WORD}"/")*{WORD}
+PATH       ("~/"|"/"|"./")?({WORD}"/")*{WORD}
 VARIABLE   "$"{LETTER}({LETTER}|{DIGIT})*
 QUOTE      "'"[^"'"]*"'"
 INVQUOTE   \`[^\`]*\`
