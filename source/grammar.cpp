@@ -1,4 +1,5 @@
 #include "grammar.hpp"
+#include "interpretation.hpp"
 
 Assignment::Assignment(AssignmentType type, std::string name,  Assignable* expression) 
     : type(type), name(name), expression(expression) { }
