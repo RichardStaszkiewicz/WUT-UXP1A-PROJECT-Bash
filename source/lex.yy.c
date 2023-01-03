@@ -351,8 +351,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 16
-#define YY_END_OF_BUFFER 17
+#define YY_NUM_RULES 15
+#define YY_END_OF_BUFFER 16
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -362,7 +362,7 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[44] =
     {   0,
-        9,    9,   17,   15,    1,   14,   15,   15,    9,    9,
+        9,    9,   16,   15,    1,   14,   15,   15,    9,    9,
        10,    3,    5,    4,    8,   15,    8,    8,    2,   15,
         1,   13,    0,   11,    9,   10,   10,   10,    8,    0,
        12,    8,    8,   10,   13,    8,    8,    8,    8,    8,
@@ -765,82 +765,78 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 #line 21 "shell.lex"
-{ printf("pipe\n"); return PIPE; }
+{ /*printf("pipe\n");*/ return PIPE; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 22 "shell.lex"
-{ printf("redirect to\n"); return TO;  }
+{ /*printf("redirect to\n");*/ return TO;  }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 23 "shell.lex"
-{ printf("redirect from\n"); return FROM; }
+{ /*printf("redirect from\n");*/ return FROM; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 24 "shell.lex"
-{ printf("equal\n"); return EQUAL; }
+{ /*printf("equal\n");*/ return EQUAL; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 25 "shell.lex"
-{ printf("export\n"); return EXPORT; }
+{ /*printf("export\n");*/ return EXPORT; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 26 "shell.lex"
-{ printf("local\n"); return LOCAL; }
+{ /*printf("local\n");*/ return LOCAL; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 27 "shell.lex"
-{ printf("IDENTIFIER: %s\n", yytext); return IDENTIFIER; }
+{ /*printf("IDENTIFIER: %s\n", yytext);*/ return IDENTIFIER; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 28 "shell.lex"
-{ printf("word: %s\n", yytext); return WORD; }
+{ /*printf("word: %s\n", yytext);*/ return WORD; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 29 "shell.lex"
-{ printf("PATH: %s\n", yytext); return PATH; }
+{ /*printf("PATH: %s\n", yytext);*/ return PATH; }
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
 #line 30 "shell.lex"
-{ printf("quote: %s\n", yytext); return QUOTE; }
+{ /*printf("quote: %s\n", yytext);*/ return QUOTE; }
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
 #line 31 "shell.lex"
-{ printf("INVQUOTE: %s\n", yytext); return INVQUOTE; }
+{ /*printf("INVQUOTE: %s\n", yytext);*/ return INVQUOTE; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 32 "shell.lex"
-{ printf("VARIABLE: %s\n", yytext); return VARIABLE; }
+{ /*printf("VARIABLE: %s\n", yytext);*/ return VARIABLE; }
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
 #line 33 "shell.lex"
-{ return 0; }
+{ /*return 0; }
+.            { /*printf("UNKNOWN\n");*/ return UNKNOWN; }
 	YY_BREAK
 case 15:
-YY_RULE_SETUP
-#line 34 "shell.lex"
-{ printf("UNKNOWN\n"); return UNKNOWN; }
-	YY_BREAK
-case 16:
 YY_RULE_SETUP
 #line 36 "shell.lex"
 ECHO;
 	YY_BREAK
-#line 844 "lex.yy.c"
+#line 840 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 

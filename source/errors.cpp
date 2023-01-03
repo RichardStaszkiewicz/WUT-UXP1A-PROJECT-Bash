@@ -1,6 +1,6 @@
 #include "errors.hpp"
 
-ShellError::ShellError(const char* msg ): message(msg)
+ShellError::ShellError()
 {
 }
 
@@ -8,14 +8,20 @@ ShellError::~ShellError()
 {
 }
 
-const char * ShellError::what () {
-    return this->message;
-}
 
-ParseError::ParseError(const char* msg) : ShellError(msg)
+ParseError::ParseError()
 {
 }
 
 ParseError::~ParseError()
+{
+}
+
+
+InterpretError::InterpretError()
+{
+}
+
+InterpretError::~InterpretError()
 {
 }

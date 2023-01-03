@@ -5,20 +5,23 @@
 
 class ShellError : public std::exception
 {
-private:
-    const char* message;
 public:
-    ShellError(const char* msg);
-
-    virtual const char * what ();
+    ShellError();
     virtual ~ShellError();
 };
 
 class ParseError : public ShellError
 {
 public:
-    ParseError(const char* msg);
+    ParseError();
     ~ParseError() override;
+};
+
+class InterpretError : public ShellError
+{
+public:
+    InterpretError();
+    ~InterpretError() override;
 };
 
 

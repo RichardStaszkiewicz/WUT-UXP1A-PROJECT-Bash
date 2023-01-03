@@ -11,12 +11,31 @@
 #include "parser.hpp"
 #include "grammar.hpp"
 
+#define BUFFER_SIZE 2000
+
 Interpreter::Interpreter(std::map<std::string, std::string> &locals) : locals(locals)
 {
 }
 
 Interpreter::~Interpreter()
 {
+}
+
+int switch_std_input(int output_pipe)
+{
+    int old_out = dup(1);
+    close(1);
+    dup2(output_pipe, 1);
+    close(output_pipe);
+
+    return old_out;
+}
+
+void unswitch_std_input(int old_output)
+{
+    close(1);
+    dup2(old_output, 1);
+    close(old_output);
 }
 
 std::string Interpreter::evaluate_assignable(const Assignable &assignable)
@@ -49,28 +68,28 @@ std::string Interpreter::evaluate_assignable(const Assignable &assignable)
     {
         Parser parser(assignable.value);
 
-        GrammarRule *ast = parser.parse();
-
         int pipe_pair[2];
         pipe(pipe_pair);
 
-        int old_out = dup(1);
-        close(1);
-        dup2(pipe_pair[1], 1);
-        close(pipe_pair[1]);
+        int old_out = switch_std_input(pipe_pair[1]);
 
-        ast->accept(*this);
-        
-        close(1);
-        dup2(old_out, 1);
-        close(old_out);
+        try
+        {
+            GrammarRule *ast = parser.parse().release();
+            ast->accept(*this);
+        }
+        catch (const ParseError &e)
+        {
+            unswitch_std_input(old_out);
+            throw e;
+        }
 
-        char buffer[1000];
-        read(pipe_pair[0], buffer, 1000);
+        unswitch_std_input(old_out);
 
+        char buffer[BUFFER_SIZE];
+        read(pipe_pair[0], buffer, BUFFER_SIZE);
         close(pipe_pair[0]);
-        delete ast;
-        
+
         return std::string(buffer);
     }
 
@@ -118,7 +137,7 @@ pid_t Interpreter::execute_command(const Command &command, int input_pipe, int o
         if (redirect_from == -1)
         {
             std::cerr << "Can't open file " << command.redirectFrom << std::endl;
-            throw ParseError("TODO");
+            throw InterpretError();
         }
     }
 
@@ -128,7 +147,7 @@ pid_t Interpreter::execute_command(const Command &command, int input_pipe, int o
         if (redirect_to == -1)
         {
             std::cerr << "Can't open file " << command.redirectFrom << std::endl;
-            throw ParseError("TODO");
+            throw InterpretError();
         }
     }
 

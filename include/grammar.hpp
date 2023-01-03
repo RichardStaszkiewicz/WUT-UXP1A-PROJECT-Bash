@@ -2,6 +2,7 @@
 #define GRAMMAR
 #include <string>
 #include <vector>
+#include <memory>
 #include "interpretation.hpp"
 
 class Interpreter;
@@ -50,7 +51,10 @@ public:
     std::string* redirectFrom;
     std::string* redirectTo;
 
-    Command(std::string program, std::vector<Assignable*> arguments, 
+    // Command(std::string program, std::vector<Assignable*> arguments, 
+    //     std::string* redirectFrom = nullptr, std::string* redirectTo = nullptr);
+
+    Command(std::string program, std::vector<std::unique_ptr<Assignable>>& arguments, 
         std::string* redirectFrom = nullptr, std::string* redirectTo = nullptr);
 
     ~Command();
@@ -60,7 +64,8 @@ class Pipe : public GrammarRule
 {
 public:
     std::vector<Command*> commands;
-    Pipe(std::vector<Command*> commands);
+    // Pipe(std::vector<Command*> commands);
+    Pipe(std::vector<std::unique_ptr<Command>>& commands);
 
     void accept(Interpreter& interpreter) override {
         interpreter.execute(*this);

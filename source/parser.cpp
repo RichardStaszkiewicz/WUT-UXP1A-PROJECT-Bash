@@ -1,9 +1,10 @@
 #include "parser.hpp"
 #include "grammar.hpp"
 #include "errors.hpp"
-#include <iostream>
-
 #include "lex.yy.c"
+
+#include <iostream>
+#include <memory> 
 
 Parser::Parser(std::string request)
 {
@@ -15,9 +16,9 @@ Parser::~Parser()
 {
 }
 
-GrammarRule *Parser::parse()
+std::unique_ptr<GrammarRule> Parser::parse()
 {
-    GrammarRule *request = nullptr;
+    std::unique_ptr<GrammarRule> request = nullptr;
 
     if ((request = parseAssignment()) != nullptr)
     {
@@ -32,7 +33,7 @@ GrammarRule *Parser::parse()
     return nullptr;
 }
 
-Assignment *Parser::parseAssignment()
+std::unique_ptr<Assignment> Parser::parseAssignment()
 {
     AssignmentType type;
     if (current == LOCAL)
@@ -54,21 +55,23 @@ Assignment *Parser::parseAssignment()
     advance();
     if (strcmp(yytext, "=") != 0)
     {
-        throw ParseError("Invalid input - '=' sign expected");
+        std::cerr << "Invalid input - '=' sign expected, got: " << yytext << std::endl;
+        throw ParseError();
     }
 
     advance();
-    Assignable *assignable = parseAssignable();
+    std::unique_ptr<Assignable> assignable = parseAssignable();
 
     if (assignable == nullptr)
     {
-        throw ParseError("Invalid input - assignable expression expected");
+        std::cerr << "Invalid input - assignable expression expected, got: " << yytext << std::endl;
+        throw ParseError();
     }
 
-    return new Assignment(type, name, assignable);
+    return std::make_unique<Assignment>(type, name, assignable.release());
 }
 
-Assignable *Parser::parseAssignable()
+std::unique_ptr<Assignable> Parser::parseAssignable()
 {
     std::string value = yytext;
 
@@ -100,39 +103,40 @@ Assignable *Parser::parseAssignable()
     }
 
     advance();
-    return new Assignable(type, value);
+    return std::make_unique<Assignable>(type, value);
 }
 
-Pipe *Parser::parsePipe()
+std::unique_ptr<Pipe> Parser::parsePipe()
 {
-    std::vector<Command *> commands;
+    std::vector<std::unique_ptr<Command>> commands;
     
-    commands.push_back(parseCommand());
+    commands.push_back(std::move(parseCommand()));
 
     while (current == PIPE)
     {
         advance();
-        commands.push_back(parseCommand());
+        commands.push_back(std::move(parseCommand()));
     }
 
-    return new Pipe(commands);
+    return std::make_unique<Pipe>(commands);
 }
 
-Command *Parser::parseCommand()
+std::unique_ptr<Command> Parser::parseCommand()
 {
     if (current != IDENTIFIER && current != WORD && current != PATH)
     {
-        throw ParseError("Parse error - WORD expected");
+        std::cerr << "Parse error - WORD expected, got:  " << yytext << std::endl;
+        throw ParseError();
     }
 
     std::string program = yytext;
     advance();
 
-    Assignable *argument;
-    std::vector<Assignable *> arguments;
+    std::unique_ptr<Assignable> argument;
+    std::vector<std::unique_ptr<Assignable>> arguments;
     while ((argument = parseAssignable()) != nullptr)
     {
-        arguments.push_back(argument);
+        arguments.push_back(std::move(argument));
     }
 
     std::string *from = nullptr;
@@ -155,7 +159,7 @@ Command *Parser::parseCommand()
         }
     }
 
-    return new Command(program, arguments, from, to);
+    return std::make_unique<Command>(program, arguments, from, to);
 }
 
 void Parser::advance()
@@ -164,7 +168,8 @@ void Parser::advance()
 
     if (current == UNKNOWN)
     {
-        throw ParseError("Parsing error - Unknown token");
+        std::cerr << "Parsing error - Unknown token:  " << yytext << std::endl;
+        throw ParseError();
     }
     
 }
