@@ -75,7 +75,7 @@ std::string Interpreter::evaluate_assignable(const Assignable &assignable)
 
         try
         {
-            GrammarRule *ast = parser.parse().release();
+            auto ast = parser.parse();
             ast->accept(*this);
         }
         catch (const ParseError &e)
