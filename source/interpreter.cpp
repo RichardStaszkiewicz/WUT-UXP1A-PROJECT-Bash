@@ -116,14 +116,13 @@ pid_t Interpreter::execute_command(const Command &command, int input_pipe, int o
 {
     // arguments
     auto arguments = evaluate_arguments(command);
-    char *args[arguments.size() + 2]{};
+    std::vector<char*> args;
 
-    args[0] = const_cast<char *>(command.program.c_str());
-    args[arguments.size() + 1] = 0;
+    args.emplace_back(const_cast<char *>(command.program.c_str()));
 
-    for (size_t i = 1; i <= arguments.size(); i++)
+    for (const auto& argument : arguments)
     {
-        args[i] = const_cast<char *>(arguments[i - 1].c_str());
+        args.emplace_back(const_cast<char *>(argument.c_str()));
     }
 
     // open redirections if exists
@@ -186,7 +185,7 @@ pid_t Interpreter::execute_command(const Command &command, int input_pipe, int o
             close(redirect_to);
         }
 
-        execvp(command.program.c_str(), args);
+        execvp(command.program.c_str(), args.data());
         std::cerr << "Program " << command.program << " not found" << std::endl;
         exit(1);
     }
