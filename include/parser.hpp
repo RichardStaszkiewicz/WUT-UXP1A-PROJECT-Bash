@@ -18,10 +18,10 @@ private:
     std::unique_ptr<Command> parseCommand();
 
 public:
-    std::unique_ptr<GrammarRule> parse();
+    std::unique_ptr<GrammarRule> parse(const std::string& request);
 
-    Parser(std::string request);
-    ~Parser();
+    Parser() {};
+    ~Parser() {};
 };
 
 #endif

@@ -2,14 +2,10 @@
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/wait.h>
-#include <unistd.h>
 #include "grammar.hpp"
 #include "interpretation.hpp"
 #include "errors.hpp"
-#include "parser.hpp"
-#include "grammar.hpp"
 
 #define BUFFER_SIZE 2000
 
@@ -64,34 +60,34 @@ std::string Interpreter::evaluate_assignable(const Assignable &assignable)
 
         return "";
     }
-    else if (assignable.type == AssignableType::INVQUOTE)
-    {
-        Parser parser(assignable.value);
-
-        int pipe_pair[2];
-        pipe(pipe_pair);
-
-        int old_out = switch_std_input(pipe_pair[1]);
-
-        try
-        {
-            auto ast = parser.parse();
-            ast->accept(*this);
-        }
-        catch (const ParseError &e)
-        {
-            unswitch_std_input(old_out);
-            throw e;
-        }
-
-        unswitch_std_input(old_out);
-
-        char buffer[BUFFER_SIZE];
-        read(pipe_pair[0], buffer, BUFFER_SIZE);
-        close(pipe_pair[0]);
-
-        return std::string(buffer);
-    }
+//    else if (assignable.type == AssignableType::INVQUOTE)
+//    {
+//        Parser parser(assignable.value);
+//
+//        int pipe_pair[2];
+//        pipe(pipe_pair);
+//
+//        int old_out = switch_std_input(pipe_pair[1]);
+//
+//        try
+//        {
+//            auto ast = parser.parse();
+//            ast->accept(*this);
+//        }
+//        catch (const ParseError &e)
+//        {
+//            unswitch_std_input(old_out);
+//            throw e;
+//        }
+//
+//        unswitch_std_input(old_out);
+//
+//        char buffer[BUFFER_SIZE];
+//        read(pipe_pair[0], buffer, BUFFER_SIZE);
+//        close(pipe_pair[0]);
+//
+//        return std::string(buffer);
+//    }
 
     return "";
 }
