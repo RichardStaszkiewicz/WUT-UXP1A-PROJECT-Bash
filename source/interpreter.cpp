@@ -9,14 +9,6 @@
 
 #define BUFFER_SIZE 2000
 
-Interpreter::Interpreter(std::map<std::string, std::string> &locals) : locals(locals)
-{
-}
-
-Interpreter::~Interpreter()
-{
-}
-
 int switch_std_input(int output_pipe)
 {
     int old_out = dup(1);

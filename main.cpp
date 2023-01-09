@@ -12,11 +12,20 @@ int main(int argc, char *argv[]) {
     Parser parser;
     t_local_variables locals = {};  // TODO retrieve local variables from environment dynamically
     auto interpreter = Interpreter(locals);
-    auto program = Program(terminal, parser, interpreter);
+    auto program = Program(parser, interpreter);
 
     if (argc == 1) {
-        program.run_interactive();
+        std::cout << "interactive" <<std::endl;
+        std::string parsable_string = "";
+        while (parsable_string != "exit")
+        {
+            getline(std::cin, parsable_string);
+            program.execute(parsable_string);
+        }
     } else {
-        program.run_batch(argc, argv);
+        std::cout << "batch" <<std::endl;
+        std::string command;
+        for(int i = 1; i < argc; i++) command += argv[i];
+        program.execute(command);
     }
 }

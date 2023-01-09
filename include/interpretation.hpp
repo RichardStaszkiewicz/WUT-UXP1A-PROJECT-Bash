@@ -10,7 +10,15 @@ class Pipe;
 class Assignable;
 class Command;
 
-class Interpreter
+
+class InterpreterInterface {
+public:
+    virtual void execute(Assignment& assignment) = 0;
+    virtual void execute(Pipe& assignment) = 0;
+};
+
+
+class Interpreter : public InterpreterInterface
 {
 private:
     std::map<std::string, std::string>& locals;
@@ -21,12 +29,10 @@ private:
     std::vector<std::string> evaluate_arguments(const Command& command);
 
 public:
-    Interpreter(std::map<std::string, std::string>& locals);
+    explicit Interpreter(std::map<std::string, std::string>& locals) : locals(locals) {};
 
-    void execute(Assignment& assignment);
-    void execute(Pipe& assignment);
-
-    ~Interpreter();
+    void execute(Assignment& assignment) override;
+    void execute(Pipe& assignment) override;
 };
 
 #endif

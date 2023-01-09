@@ -13,7 +13,7 @@ enum class AssignableType { WORD, VARIABLE, QUOTE, INVQUOTE };
 class GrammarRule
 {
 public:
-    virtual void accept(Interpreter& Interpreter) = 0;
+    virtual void accept(InterpreterInterface& interpreter) = 0;
     virtual ~GrammarRule() = default;
 };
 
@@ -36,7 +36,7 @@ public:
 
     Assignment(AssignmentType type, std::string name,  Assignable* expression);
 
-    void accept(Interpreter& interpreter) override {
+    void accept(InterpreterInterface& interpreter) override {
         interpreter.execute(*this);
     }
 
@@ -67,7 +67,7 @@ public:
     // Pipe(std::vector<Command*> commands);
     Pipe(std::vector<std::unique_ptr<Command>>& commands);
 
-    void accept(Interpreter& interpreter) override {
+    void accept(InterpreterInterface& interpreter) override {
         interpreter.execute(*this);
     }
 

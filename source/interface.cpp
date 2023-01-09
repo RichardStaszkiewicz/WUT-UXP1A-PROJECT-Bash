@@ -5,7 +5,7 @@
 
 Interface::Interface()
 {
-    current_dir = std::string(std::filesystem::current_path());
+//    current_dir = std::string(std::filesystem::current_path());
 }
 
 Interface::Interface(std::string dir) : current_dir(dir) {};

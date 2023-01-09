@@ -8,17 +8,12 @@
 
 class Program {
 private:
-    Interface &terminal;
-    Parser &parser;
-    Interpreter &interpreter;
-
-    void execute(std::string parsable_string);
+    ParserInterface &parser;
+    InterpreterInterface &interpreter;
 
 public:
-    Program(Interface &terminal, Parser &parser, Interpreter &interpreter) : terminal(terminal), parser(parser),
-                                                                             interpreter(interpreter) {};
-    void run_interactive();
-    void run_batch(int argc, char** argv);
+    Program(ParserInterface &parser, InterpreterInterface &interpreter) : parser(parser), interpreter(interpreter) {};
+    void execute(const std::string& parsable_string);
 };
 
 #endif //SHELL_UXP1A_PROGRAM_HPP
