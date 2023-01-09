@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 
+// TODO to be reworked, probably should implement some interface
 class Interface
 {
 private:

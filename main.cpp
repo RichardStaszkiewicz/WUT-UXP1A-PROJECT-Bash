@@ -15,6 +15,8 @@ int main(int argc, char *argv[]) {
     auto program = Program(parser, interpreter);
 
     if (argc == 1) {
+        // TODO should use Interface (terminal)
+        // something like -> do {program.execute(command)} while (command = terminal.getNextCommand())
         std::cout << "interactive" <<std::endl;
         std::string parsable_string = "";
         while (parsable_string != "exit")
@@ -23,6 +25,7 @@ int main(int argc, char *argv[]) {
             program.execute(parsable_string);
         }
     } else {
+        // TODO same, should use Interface like above
         std::cout << "batch" <<std::endl;
         std::string command;
         for(int i = 1; i < argc; i++) command += argv[i];
