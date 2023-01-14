@@ -4,20 +4,13 @@
 #include "lex.yy.c"
 
 #include <iostream>
-#include <memory> 
+#include <memory>
 
-Parser::Parser(std::string request)
+std::unique_ptr<GrammarRule> Parser::parse(const std::string& rawRequest)
 {
-    yy_scan_string(request.c_str());
+    yy_scan_string(rawRequest.c_str());
     current = yylex();
-}
 
-Parser::~Parser()
-{
-}
-
-std::unique_ptr<GrammarRule> Parser::parse()
-{
     std::unique_ptr<GrammarRule> request = nullptr;
 
     if ((request = parseAssignment()) != nullptr)

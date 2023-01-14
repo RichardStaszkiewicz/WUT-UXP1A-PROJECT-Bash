@@ -5,7 +5,12 @@
 #include <memory>
 #include "grammar.hpp"
 
-class Parser
+class ParserInterface {
+public:
+    virtual std::unique_ptr<GrammarRule> parse(const std::string& request) = 0;
+};
+
+class Parser : public ParserInterface
 {
 
 private: 
@@ -18,10 +23,7 @@ private:
     std::unique_ptr<Command> parseCommand();
 
 public:
-    std::unique_ptr<GrammarRule> parse();
-
-    Parser(std::string request);
-    ~Parser();
+    std::unique_ptr<GrammarRule> parse(const std::string& request) override;
 };
 
 #endif

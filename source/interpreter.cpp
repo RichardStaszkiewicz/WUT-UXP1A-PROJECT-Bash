@@ -2,24 +2,12 @@
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/wait.h>
-#include <unistd.h>
 #include "grammar.hpp"
 #include "interpretation.hpp"
 #include "errors.hpp"
-#include "parser.hpp"
-#include "grammar.hpp"
 
 #define BUFFER_SIZE 2000
-
-Interpreter::Interpreter(std::map<std::string, std::string> &locals) : locals(locals)
-{
-}
-
-Interpreter::~Interpreter()
-{
-}
 
 int switch_std_input(int output_pipe)
 {
@@ -64,34 +52,34 @@ std::string Interpreter::evaluate_assignable(const Assignable &assignable)
 
         return "";
     }
-    else if (assignable.type == AssignableType::INVQUOTE)
-    {
-        Parser parser(assignable.value);
-
-        int pipe_pair[2];
-        pipe(pipe_pair);
-
-        int old_out = switch_std_input(pipe_pair[1]);
-
-        try
-        {
-            auto ast = parser.parse();
-            ast->accept(*this);
-        }
-        catch (const ParseError &e)
-        {
-            unswitch_std_input(old_out);
-            throw e;
-        }
-
-        unswitch_std_input(old_out);
-
-        char buffer[BUFFER_SIZE];
-        read(pipe_pair[0], buffer, BUFFER_SIZE);
-        close(pipe_pair[0]);
-
-        return std::string(buffer);
-    }
+//    else if (assignable.type == AssignableType::INVQUOTE)
+//    {
+//        Parser parser(assignable.value);
+//
+//        int pipe_pair[2];
+//        pipe(pipe_pair);
+//
+//        int old_out = switch_std_input(pipe_pair[1]);
+//
+//        try
+//        {
+//            auto ast = parser.parse();
+//            ast->accept(*this);
+//        }
+//        catch (const ParseError &e)
+//        {
+//            unswitch_std_input(old_out);
+//            throw e;
+//        }
+//
+//        unswitch_std_input(old_out);
+//
+//        char buffer[BUFFER_SIZE];
+//        read(pipe_pair[0], buffer, BUFFER_SIZE);
+//        close(pipe_pair[0]);
+//
+//        return std::string(buffer);
+//    }
 
     return "";
 }
@@ -116,14 +104,13 @@ pid_t Interpreter::execute_command(const Command &command, int input_pipe, int o
 {
     // arguments
     auto arguments = evaluate_arguments(command);
-    char *args[arguments.size() + 2]{};
+    std::vector<char*> args;
 
-    args[0] = const_cast<char *>(command.program.c_str());
-    args[arguments.size() + 1] = 0;
+    args.emplace_back(const_cast<char *>(command.program.c_str()));
 
-    for (size_t i = 1; i <= arguments.size(); i++)
+    for (const auto& argument : arguments)
     {
-        args[i] = const_cast<char *>(arguments[i - 1].c_str());
+        args.emplace_back(const_cast<char *>(argument.c_str()));
     }
 
     // open redirections if exists
@@ -186,7 +173,7 @@ pid_t Interpreter::execute_command(const Command &command, int input_pipe, int o
             close(redirect_to);
         }
 
-        execvp(command.program.c_str(), args);
+        execvp(command.program.c_str(), args.data());
         std::cerr << "Program " << command.program << " not found" << std::endl;
         exit(1);
     }
