@@ -11,6 +11,9 @@ class Assignable;
 class Command;
 
 
+using t_int_matrix = std::vector<std::vector<int> >;
+
+
 class InterpreterInterface {
 public:
     virtual void execute(Assignment& assignment) = 0;
@@ -27,6 +30,10 @@ private:
     
     pid_t execute_command(const Command& command, int input_pipe=-1, int output_pipe=-1);
     std::vector<std::string> evaluate_arguments(const Command& command);
+
+    static t_int_matrix createMultiplePipes(int pipesNumber);
+
+    static void closeMultiplePipes(t_int_matrix::iterator pipesBegin, t_int_matrix::iterator pipesEnd);
 
 public:
     explicit Interpreter(std::map<std::string, std::string>& locals) : locals(locals) {};

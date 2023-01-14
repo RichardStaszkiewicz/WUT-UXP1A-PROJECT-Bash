@@ -227,14 +227,7 @@ void Interpreter::execute(Pipe &pipe_obj)
     {
         int commands_count = pipe_obj.commands.size();
 
-        int pipe_pairs[commands_count - 1][2];
-
-        // initiate pipes
-        for (int i = 0; i < commands_count - 1; i++)
-        {
-            pipe(pipe_pairs[i]);
-            // TODO: check if return not 0. If 0 close created before and, write error and throw
-        }
+        t_int_matrix pipe_pairs = createMultiplePipes(commands_count - 1);
 
         // run commands
         pids.push_back(execute_command(*pipe_obj.commands[0], -1, pipe_pairs[0][1]));
@@ -252,5 +245,26 @@ void Interpreter::execute(Pipe &pipe_obj)
         int status;
         waitpid(pid, &status, 0);
         // TODO: check if status ok
+    }
+}
+
+t_int_matrix Interpreter::createMultiplePipes(int pipesNumber) {
+    std::vector<int> initialSinglePipeState(2, -1);
+    t_int_matrix pipes(pipesNumber, initialSinglePipeState);
+
+    for (auto it=pipes.begin(); it < pipes.end(); it++) {
+        if (pipe(it->data()) == -1) {
+            perror("Error creating pipes");
+            closeMultiplePipes(pipes.begin(), it);
+        }
+    }
+
+    return pipes;
+};
+
+void Interpreter::closeMultiplePipes(t_int_matrix ::iterator pipesBegin, t_int_matrix ::iterator pipesEnd) {
+    for (auto it = pipesBegin; it < pipesEnd; it++) {
+        close(it->at(0));
+        close(it->at(1));
     }
 }
