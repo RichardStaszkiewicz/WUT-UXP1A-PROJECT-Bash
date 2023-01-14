@@ -24,5 +24,25 @@ public:
     ~InterpretError() override;
 };
 
+class AssignmentInterpretError : public InterpretError
+{
+public:
+    AssignmentInterpretError();
+    ~AssignmentInterpretError() override;
+};
+
+class AssignmentNameInterpretError : public AssignmentInterpretError
+{
+public:
+    AssignmentNameInterpretError();
+    ~AssignmentNameInterpretError() override;
+};
+
+class MemoryAssignmentInterpretError : public AssignmentInterpretError
+{
+public:
+    MemoryAssignmentInterpretError();
+    ~MemoryAssignmentInterpretError() override;
+};
 
 #endif

@@ -94,9 +94,16 @@ void Interpreter::execute(Assignment &assignment)
     }
     else if (assignment.type == AssignmentType::EXPORT)
     {
-        setenv(assignment.name.c_str(), value.c_str(), 1);
-
-        // TODO: throw uncuccessfull
+        try {
+            setenv(assignment.name.c_str(), value.c_str(), 1);
+        }
+        catch(int num){
+            if(num == EINVAL) throw AssignmentNameInterpretError();
+            if(num == ENOMEM) throw MemoryAssignmentInterpretError();
+        }
+        catch(...){
+            throw AssignmentInterpretError();
+        }
     }
 }
 
