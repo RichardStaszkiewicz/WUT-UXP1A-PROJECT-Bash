@@ -12,6 +12,7 @@ class Command;
 
 
 using t_int_matrix = std::vector<std::vector<int> >;
+using t_pids = std::vector<pid_t>;
 
 
 class InterpreterInterface {
@@ -35,11 +36,18 @@ private:
 
     static void closeMultiplePipes(t_int_matrix::iterator pipesBegin, t_int_matrix::iterator pipesEnd);
 
+    void executeSingleCommand(const Command &command, t_pids pids);
+
+    void executeMultipleCommands(const std::vector<Command *>& commands, t_pids pids, t_int_matrix pipe_pairs);
+
+    void executeCommands(t_pids &pids, t_int_matrix &pipe_pairs, std::vector<Command *>& commands);
+
 public:
     explicit Interpreter(std::map<std::string, std::string>& locals) : locals(locals) {};
 
     void execute(Assignment& assignment) override;
     void execute(Pipe& assignment) override;
+
 };
 
 #endif

@@ -217,28 +217,10 @@ std::vector<std::string> Interpreter::evaluate_arguments(const Command &command)
 
 void Interpreter::execute(Pipe &pipe_obj)
 {
-    std::vector<pid_t> pids(pipe_obj.commands.size(), -1);
+    t_pids pids(pipe_obj.commands.size(), -1);
+    t_int_matrix pipe_pairs = createMultiplePipes(pipe_obj.commands.size() - 1);
 
-    if (pipe_obj.commands.size() == 1)
-    {
-        pids.push_back(execute_command(*pipe_obj.commands[0]));
-    }
-    else
-    {
-        int commands_count = pipe_obj.commands.size();
-
-        t_int_matrix pipe_pairs = createMultiplePipes(commands_count - 1);
-
-        // run commands
-        pids.push_back(execute_command(*pipe_obj.commands[0], -1, pipe_pairs[0][1]));
-
-        for (int i = 1; i < commands_count - 1; i++)
-        {
-            pids.push_back(execute_command(*pipe_obj.commands[i], pipe_pairs[i - 1][0], pipe_pairs[i][1]));
-        }
-
-        pids.push_back(execute_command(*pipe_obj.commands[commands_count - 1], pipe_pairs[commands_count - 2][0], -1));
-    }
+    executeCommands(pids, pipe_pairs, pipe_obj.commands);
 
     for (auto pid : pids)
     {
@@ -267,4 +249,27 @@ void Interpreter::closeMultiplePipes(t_int_matrix ::iterator pipesBegin, t_int_m
         close(it->at(0));
         close(it->at(1));
     }
+}
+
+void Interpreter::executeCommands(t_pids &pids, t_int_matrix &pipe_pairs, std::vector<Command *>& commands) {
+    if (commands.size() == 1) {
+        executeSingleCommand(*commands[0], pids);
+    } else {
+        executeMultipleCommands(commands, pids, pipe_pairs);
+    }
+}
+
+void Interpreter::executeSingleCommand(const Command &command, t_pids pids) {
+    pids.push_back(execute_command(command));
+}
+
+void Interpreter::executeMultipleCommands(const std::vector<Command *>& commands, t_pids pids, t_int_matrix pipe_pairs) {
+    int commands_count = commands.size();
+
+    pids.push_back(execute_command(*commands[0], -1, pipe_pairs[0][1]));
+    for (int i = 1; i < commands_count - 1; i++)
+    {
+        pids.push_back(execute_command(*commands[i], pipe_pairs[i - 1][0], pipe_pairs[i][1]));
+    }
+    pids.push_back(execute_command(*commands[commands_count - 1], pipe_pairs[commands_count - 2][0], -1));
 }
