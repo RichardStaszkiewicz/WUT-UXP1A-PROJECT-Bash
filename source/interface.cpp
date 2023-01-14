@@ -25,3 +25,8 @@ int Interface::writeOutput(std::string message)
     out << message;
     return 0;
 }
+
+std::string Interface::get_current_dir() {return current_dir;}
+std::istream& Interface::get_in() {return in;}
+std::ostream& Interface::get_out() {return out;};
+void Interface::set_current_dir(std::string new_dir) {current_dir = new_dir; return;};
