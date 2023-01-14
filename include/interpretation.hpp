@@ -21,7 +21,7 @@ public:
 class Interpreter : public InterpreterInterface
 {
 private:
-    std::map<std::string, std::string>& locals;
+    char** locals;
 
     std::string evaluate_assignable(const Assignable &assignable);
     
@@ -29,7 +29,7 @@ private:
     std::vector<std::string> evaluate_arguments(const Command& command);
 
 public:
-    explicit Interpreter(std::map<std::string, std::string>& locals) : locals(locals) {};
+    explicit Interpreter(char** locals) : locals(locals) {};
 
     void execute(Assignment& assignment) override;
     void execute(Pipe& assignment) override;
