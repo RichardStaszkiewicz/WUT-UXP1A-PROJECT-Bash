@@ -221,13 +221,7 @@ void Interpreter::execute(Pipe &pipe_obj)
     t_int_matrix pipe_pairs = createMultiplePipes(pipe_obj.commands.size() - 1);
 
     executeCommands(pids, pipe_pairs, pipe_obj.commands);
-
-    for (auto pid : pids)
-    {
-        int status;
-        waitpid(pid, &status, 0);
-        // TODO: check if status ok
-    }
+    waitForChildrenExecution(pids);
 }
 
 t_int_matrix Interpreter::createMultiplePipes(int pipesNumber) {
@@ -238,6 +232,7 @@ t_int_matrix Interpreter::createMultiplePipes(int pipesNumber) {
         if (pipe(it->data()) == -1) {
             perror("Error creating pipes");
             closeMultiplePipes(pipes.begin(), it);
+            exit(EXIT_FAILURE);
         }
     }
 
@@ -272,4 +267,14 @@ void Interpreter::executeMultipleCommands(const std::vector<Command *>& commands
         pids.push_back(execute_command(*commands[i], pipe_pairs[i - 1][0], pipe_pairs[i][1]));
     }
     pids.push_back(execute_command(*commands[commands_count - 1], pipe_pairs[commands_count - 2][0], -1));
+}
+
+void Interpreter::waitForChildrenExecution(t_pids &pids) {
+    for (auto pid : pids) {
+        int status;
+        if (waitpid(pid, &status, 0) == -1){
+            perror("waitpid");
+            exit(EXIT_FAILURE);
+        }
+    }
 }

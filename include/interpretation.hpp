@@ -48,6 +48,7 @@ public:
     void execute(Assignment& assignment) override;
     void execute(Pipe& assignment) override;
 
+    static void waitForChildrenExecution(t_pids &pids) ;
 };
 
 #endif
