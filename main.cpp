@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
         std::string parsable_string = "";
         while (parsable_string != "exit")
         {
-            getline(std::cin, parsable_string);
+            parsable_string = terminal.readInput(std::cin);
             program.execute(parsable_string);
         }
     } else {

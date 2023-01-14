@@ -13,6 +13,7 @@ public:
     Interface(std::string current_dir);
     void run_interactive();                     // ./program
     void run_batch(std::string parsable);       // ./program "{requested command}"
+    std::string readInput(std::istream& in);
     //~Interface() = default;
 };
 

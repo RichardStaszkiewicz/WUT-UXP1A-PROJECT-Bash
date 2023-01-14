@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <filesystem>
+#include <map>
 
 Interface::Interface()
 {
@@ -9,6 +10,13 @@ Interface::Interface()
 }
 
 Interface::Interface(std::string dir) : current_dir(dir) {};
+
+std::string Interface::readInput(std::istream& in)
+{
+    std::string parsable_string;
+    getline(in, parsable_string);
+    return parsable_string;
+};
 
 void Interface::run_interactive()
 {
