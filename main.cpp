@@ -8,6 +8,8 @@ using t_local_variables = std::map<std::string, std::string>;
 
 
 int main(int argc, char *argv[]) {
+    std::istream &in = std::cin;
+    std::ostream &out = std::cout;
     Interface terminal;
     Parser parser;
     t_local_variables locals = {};  // TODO retrieve local variables from environment dynamically
@@ -15,18 +17,15 @@ int main(int argc, char *argv[]) {
     auto program = Program(parser, interpreter);
 
     if (argc == 1) {
-        // TODO should use Interface (terminal)
-        // something like -> do {program.execute(command)} while (command = terminal.getNextCommand())
-        std::cout << "interactive" <<std::endl;
+        out << "interactive" <<std::endl;
         std::string parsable_string = "";
         while (parsable_string != "exit")
         {
-            parsable_string = terminal.readInput(std::cin);
+            parsable_string = terminal.readInput(in);
             program.execute(parsable_string);
         }
     } else {
-        // TODO same, should use Interface like above
-        std::cout << "batch" <<std::endl;
+        out << "batch" <<std::endl;
         std::string command;
         for(int i = 1; i < argc; i++) command += argv[i];
         program.execute(command);
