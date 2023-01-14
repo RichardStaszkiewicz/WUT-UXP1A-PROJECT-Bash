@@ -3,18 +3,18 @@
 #include <string>
 #include <iostream>
 
-// TODO to be reworked, probably should implement some interface
 class Interface
 {
 private:
     std::string current_dir;
+    std::istream& in = std::cin;
+    std::ostream& out = std::cout;
 public:
     Interface();
+    Interface(std::istream& is, std::ostream& os);
     Interface(std::string current_dir);
-    void run_interactive();                     // ./program
-    void run_batch(std::string parsable);       // ./program "{requested command}"
-    std::string readInput(std::istream& in);
-    //~Interface() = default;
+    std::string readInput();
+    int writeOutput(std::string message);
 };
 
 #endif

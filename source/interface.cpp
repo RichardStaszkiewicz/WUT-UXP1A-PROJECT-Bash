@@ -9,27 +9,19 @@ Interface::Interface()
 //    current_dir = std::string(std::filesystem::current_path());
 }
 
+Interface::Interface(std::istream& is, std::ostream& os) : in(is), out(os) {};
+
 Interface::Interface(std::string dir) : current_dir(dir) {};
 
-std::string Interface::readInput(std::istream& in)
+std::string Interface::readInput()
 {
     std::string parsable_string;
     getline(in, parsable_string);
     return parsable_string;
-};
-
-void Interface::run_interactive()
-{
-//    std::string parsable_string = "";
-//    while (parsable_string != "exit")
-//    {
-//        std::cout << "(" << current_dir << ")$ ";
-//        getline(std::cin, parsable_string);
-//        execute_parsable_string(parsable_string);
-//    }
 }
 
-void Interface::run_batch(std::string parsable)
+int Interface::writeOutput(std::string message)
 {
-//    execute_parsable_string(parsable);
+    out << message;
+    return 0;
 }
