@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
         std::string parsable_string = "";
         while (parsable_string != "exit")
         {
+            terminal.writePrompt();
             parsable_string = terminal.readInput();
             program.execute(parsable_string);
         }

@@ -25,6 +25,11 @@ int Interface::writeOutput(std::string message)
     out << message;
     return 0;
 }
+int Interface::writePrompt()
+{
+    out << prompt;
+    return 0;
+}
 
 std::string Interface::get_current_dir() {return current_dir;}
 std::istream& Interface::get_in() {return in;}
