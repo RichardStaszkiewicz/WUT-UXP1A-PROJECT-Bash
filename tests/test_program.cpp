@@ -13,6 +13,7 @@ class MockInterpreter : public InterpreterInterface {
 public:
     MOCK_METHOD(void, execute, (Assignment& assignment), (override));
     MOCK_METHOD(void, execute, (Pipe& assignment), (override));
+    MOCK_METHOD(void, execute, (SelfProcessCommand& buildInCommand), (override));
 };
 
 

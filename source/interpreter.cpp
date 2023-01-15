@@ -110,7 +110,7 @@ void Interpreter::execute(Assignment &assignment)
 pid_t Interpreter::execute_command(const Command &command, int input_pipe, int output_pipe)
 {
     // arguments
-    auto arguments = evaluate_arguments(command);
+    auto arguments = evaluate_arguments(command.arguments);
     std::vector<char*> args;
 
     args.emplace_back(const_cast<char *>(command.program.c_str()));
@@ -210,11 +210,11 @@ pid_t Interpreter::execute_command(const Command &command, int input_pipe, int o
     return pid;
 }
 
-std::vector<std::string> Interpreter::evaluate_arguments(const Command &command)
+std::vector<std::string> Interpreter::evaluate_arguments(const std::vector<Assignable*> &assignables)
 {
     std::vector<std::string> arguments{};
 
-    for (auto assignable : command.arguments)
+    for (auto assignable : assignables)
     {
         arguments.push_back(evaluate_assignable(*assignable));
     }
@@ -282,6 +282,55 @@ void Interpreter::waitForChildrenExecution(t_pids &pids) {
         if (waitpid(pid, &status, 0) == -1){
             perror("waitpid");
             exit(EXIT_FAILURE);
+        }
+    }
+}
+
+void Interpreter::execute(SelfProcessCommand& buildInCommand) {
+    auto arguments = evaluate_arguments(buildInCommand.arguments);
+
+    if (buildInCommand.type == SelfProcessCommandType::CD)
+    {
+        executeCdCommand(arguments);
+        return;
+    }
+
+    std::cerr << "Unknown type of build in command" << std::endl;
+    throw InterpretError();
+}
+
+void Interpreter::executeCdCommand(const std::vector<std::string>& arguments) {
+    if (arguments.size() != 1)
+    {
+        std::cerr << "Invalid number of arguments: expected 1, actual: " << arguments.size() << std::endl;
+        throw InterpretError();
+    }
+
+    int result = chdir(arguments[0].c_str());
+    
+    if (result != 0)
+    {
+        switch (errno)
+        {
+        case ENOENT:
+            std::cerr << "Directory does not exists: " << arguments[0] << std::endl;
+            throw new InterpretError();
+
+        case ENOTDIR:
+            std::cerr << "Path does not p[oint a directory: " << arguments[0] << std::endl;
+            throw new InterpretError();
+
+        case EACCES:
+            std::cerr << "Search permission is denied: " << arguments[0] << std::endl;
+            throw new InterpretError();
+        
+        case ENAMETOOLONG:
+            std::cerr << "Path is too long: " << arguments[0] << std::endl;
+            throw new InterpretError();
+
+        default:
+            std::cerr << "Access error: " << arguments[0] << std::endl;
+            throw new InterpretError();
         }
     }
 }
