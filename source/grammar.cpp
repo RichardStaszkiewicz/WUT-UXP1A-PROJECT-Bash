@@ -22,7 +22,7 @@ Assignable::Assignable(AssignableType type, std::string value) : type(type), val
 
 Command::Command(std::string program, std::vector<std::unique_ptr<Assignable>>& arguments, 
         std::string* redirectFrom, std::string* redirectTo)
-        : program(program), arguments(*(new std::vector<Assignable*>)), redirectFrom(redirectFrom), redirectTo(redirectTo) 
+        : program(program), redirectFrom(redirectFrom), redirectTo(redirectTo)
     {
         for (auto& uargument : arguments)
         {
@@ -41,6 +41,11 @@ Command::~Command() {
         /* code */
     }
     
+}
+
+std::unique_ptr<Command> Command::getEmptyCommand() {
+    std::vector<std::unique_ptr<Assignable>> emptyVect;
+    return std::make_unique<Command>("", emptyVect);
 }
 
 // Pipe::Pipe(std::vector<Command*> commands) : commands(commands) { }

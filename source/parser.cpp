@@ -3,6 +3,7 @@
 #include "errors.hpp"
 #include "lex.yy.c"
 
+#include <algorithm>
 #include <iostream>
 #include <memory>
 
@@ -118,6 +119,10 @@ std::unique_ptr<Command> Parser::parseCommand()
 {
     if (current != IDENTIFIER && current != WORD && current != PATH)
     {
+        std::string trimmedStr = yytext;
+        trimmedStr.erase(trimmedStr.begin(), std::find_if(trimmedStr.begin(), trimmedStr.end(), [](int c) {return !std::isspace(c);}));
+        if (trimmedStr.empty())
+            return Command::getEmptyCommand();
         std::cerr << "Parse error - WORD expected, got:  " << yytext << std::endl;
         throw ParseError();
     }

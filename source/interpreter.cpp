@@ -181,7 +181,8 @@ pid_t Interpreter::execute_command(const Command &command, int input_pipe, int o
         }
 
         execvp(command.program.c_str(), args.data());
-        std::cerr << "Program " << command.program << " not found" << std::endl;
+        if (command.program != "exit" && !command.program.empty())
+            std::cerr << "Program " << command.program << " not found" << std::endl;
         exit(1);
     }
 

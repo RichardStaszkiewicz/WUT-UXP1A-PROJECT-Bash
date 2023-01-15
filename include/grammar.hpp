@@ -58,6 +58,8 @@ public:
         std::string* redirectFrom = nullptr, std::string* redirectTo = nullptr);
 
     ~Command();
+
+    static std::unique_ptr<Command> getEmptyCommand();
 };
 
 class Pipe : public GrammarRule
