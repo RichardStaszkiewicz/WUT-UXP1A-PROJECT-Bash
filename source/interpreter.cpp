@@ -225,7 +225,7 @@ std::vector<std::string> Interpreter::evaluate_arguments(const Command &command)
 
 void Interpreter::execute(Pipe &pipe_obj)
 {
-    t_pids pids(pipe_obj.commands.size(), -1);
+    t_pids pids;
     t_int_matrix pipe_pairs = createMultiplePipes(pipe_obj.commands.size() - 1);
 
     executeCommands(pids, pipe_pairs, pipe_obj.commands);
@@ -262,11 +262,11 @@ void Interpreter::executeCommands(t_pids &pids, t_int_matrix &pipe_pairs, std::v
     }
 }
 
-void Interpreter::executeSingleCommand(const Command &command, t_pids pids) {
+void Interpreter::executeSingleCommand(const Command &command, t_pids &pids) {
     pids.push_back(execute_command(command));
 }
 
-void Interpreter::executeMultipleCommands(const std::vector<Command *>& commands, t_pids pids, t_int_matrix pipe_pairs) {
+void Interpreter::executeMultipleCommands(const std::vector<Command *>& commands, t_pids &pids, t_int_matrix pipe_pairs) {
     int commands_count = commands.size();
 
     pids.push_back(execute_command(*commands[0], -1, pipe_pairs[0][1]));
@@ -277,10 +277,9 @@ void Interpreter::executeMultipleCommands(const std::vector<Command *>& commands
     pids.push_back(execute_command(*commands[commands_count - 1], pipe_pairs[commands_count - 2][0], -1));
 }
 
-void Interpreter::waitForChildrenExecution(t_pids &pids) {
+void Interpreter::waitForChildrenExecution(const t_pids &pids) {
     for (auto pid : pids) {
-        int status;
-        if (waitpid(pid, &status, 0) == -1){
+        if (waitpid(pid, nullptr, 0) == -1){
             perror("waitpid");
             exit(EXIT_FAILURE);
         }

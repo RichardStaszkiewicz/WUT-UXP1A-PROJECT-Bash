@@ -36,9 +36,9 @@ private:
 
     static void closeMultiplePipes(t_int_matrix::iterator pipesBegin, t_int_matrix::iterator pipesEnd);
 
-    void executeSingleCommand(const Command &command, t_pids pids);
+    void executeSingleCommand(const Command &command, t_pids &pids);
 
-    void executeMultipleCommands(const std::vector<Command *>& commands, t_pids pids, t_int_matrix pipe_pairs);
+    void executeMultipleCommands(const std::vector<Command *>& commands, t_pids &pids, t_int_matrix pipe_pairs);
 
     void executeCommands(t_pids &pids, t_int_matrix &pipe_pairs, std::vector<Command *>& commands);
 
@@ -48,7 +48,7 @@ public:
     void execute(Assignment& assignment) override;
     void execute(Pipe& assignment) override;
 
-    static void waitForChildrenExecution(t_pids &pids) ;
+    static void waitForChildrenExecution(const t_pids &pids) ;
 };
 
 #endif
