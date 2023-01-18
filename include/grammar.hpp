@@ -7,6 +7,7 @@
 
 class Interpreter;
 
+enum class SelfProcessCommandType { CD };
 enum class AssignmentType { LOCAL, EXPORT };
 enum class AssignableType { WORD, VARIABLE, QUOTE, INVQUOTE };
 
@@ -62,11 +63,25 @@ public:
     static std::unique_ptr<Command> getEmptyCommand();
 };
 
+class SelfProcessCommand : public GrammarRule
+{
+public:
+    SelfProcessCommandType type;
+    std::vector<Assignable*> arguments;
+
+    SelfProcessCommand(SelfProcessCommandType type, std::vector<std::unique_ptr<Assignable>>& arguments);
+
+    void accept(InterpreterInterface& interpreter) override {
+        interpreter.execute(*this);
+    }
+
+    ~SelfProcessCommand();
+};
+
 class Pipe : public GrammarRule
 {
 public:
     std::vector<Command*> commands;
-    // Pipe(std::vector<Command*> commands);
     Pipe(std::vector<std::unique_ptr<Command>>& commands);
 
     void accept(InterpreterInterface& interpreter) override {

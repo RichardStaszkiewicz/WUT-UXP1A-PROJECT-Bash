@@ -14,6 +14,11 @@ std::unique_ptr<GrammarRule> Parser::parse(const std::string& rawRequest)
 
     std::unique_ptr<GrammarRule> request = nullptr;
 
+    if ((request = parseSelfProcessCommand()) != nullptr)
+    {
+        return request;
+    }
+
     if ((request = parseAssignment()) != nullptr)
     {
         return request;
@@ -25,6 +30,36 @@ std::unique_ptr<GrammarRule> Parser::parse(const std::string& rawRequest)
     }
 
     return nullptr;
+}
+
+std::unique_ptr<SelfProcessCommand> Parser::parseSelfProcessCommand()
+{
+    SelfProcessCommandType type;
+    if (strcmp(yytext, "cd") == 0)
+    {
+        type = SelfProcessCommandType::CD;
+    }
+    else
+    {
+        return nullptr;
+    }
+    
+    advance();
+
+    std::vector<std::unique_ptr<Assignable>> arguments = parseAssignables();
+    return std::make_unique<SelfProcessCommand>(type, arguments);
+}
+
+std::vector<std::unique_ptr<Assignable>> Parser::parseAssignables()
+{
+    std::unique_ptr<Assignable> argument;
+    std::vector<std::unique_ptr<Assignable>> arguments;
+    while ((argument = parseAssignable()) != nullptr)
+    {
+        arguments.push_back(std::move(argument));
+    }
+
+    return arguments;
 }
 
 std::unique_ptr<Assignment> Parser::parseAssignment()
@@ -70,7 +105,7 @@ std::unique_ptr<Assignable> Parser::parseAssignable()
     std::string value = yytext;
 
     AssignableType type;
-    if (current == WORD || current == IDENTIFIER)
+    if (current == WORD || current == IDENTIFIER || current == PATH)
     {
         type = AssignableType::WORD;
     }

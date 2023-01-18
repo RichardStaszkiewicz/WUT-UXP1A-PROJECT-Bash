@@ -48,7 +48,21 @@ std::unique_ptr<Command> Command::getEmptyCommand() {
     return std::make_unique<Command>("", emptyVect);
 }
 
-// Pipe::Pipe(std::vector<Command*> commands) : commands(commands) { }
+SelfProcessCommand::SelfProcessCommand(SelfProcessCommandType type, std::vector<std::unique_ptr<Assignable>>& arguments) 
+        : type(type)  
+{
+    for (auto& uargument : arguments)
+    {
+        this->arguments.push_back(uargument.release());
+    }
+}
+
+SelfProcessCommand::~SelfProcessCommand() {
+    for(auto assignable : arguments)
+    {
+        delete assignable;
+    }
+}
 
 Pipe::Pipe(std::vector<std::unique_ptr<Command>>& commands) : commands(*(new std::vector<Command*>))
 {
