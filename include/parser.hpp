@@ -5,6 +5,15 @@
 #include <memory>
 #include "grammar.hpp"
 
+
+class GrammarRule;
+class Assignment;
+class Assignable;
+class Pipe;
+class SelfProcessCommand;
+class Command;
+
+
 class ParserInterface {
 public:
     virtual std::unique_ptr<GrammarRule> parse(const std::string& request) = 0;

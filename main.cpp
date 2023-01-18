@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
     Interface terminal(std::cin, std::cout);
     Parser parser;
     t_local_variables locals = {};  // TODO retrieve local variables from environment dynamically
-    auto interpreter = Interpreter(locals);
+    auto interpreter = Interpreter(&parser, locals);
     auto program = Program(parser, interpreter);
 
     if (argc == 1) {

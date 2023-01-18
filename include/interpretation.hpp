@@ -1,15 +1,19 @@
 #ifndef INTERPRETATION
 #define INTERPRETATION
 
+#include "grammar.hpp"
+#include "parser.hpp"
 #include <map>
 #include <string>
-#include "grammar.hpp"
+
 
 class Assignment;
 class Pipe;
 class Assignable;
 class Command;
 class SelfProcessCommand;
+class ParserInterface;
+
 
 using t_int_matrix = std::vector<std::vector<int> >;
 using t_pids = std::vector<pid_t>;
@@ -26,6 +30,8 @@ public:
 class Interpreter : public InterpreterInterface
 {
 private:
+    ParserInterface* parser;
+
     std::map<std::string, std::string>& locals;
 
     std::string evaluate_assignable(const Assignable &assignable);
@@ -47,7 +53,7 @@ private:
     void executeCdCommand(const std::vector<std::string>& arguments);
 
 public:
-    explicit Interpreter(std::map<std::string, std::string>& locals) : locals(locals) {};
+    explicit Interpreter(ParserInterface* parser, std::map<std::string, std::string>& locals) : parser(parser), locals(locals) {};
 
     void execute(Assignment& assignment) override;
     void execute(Pipe& assignment) override;

@@ -55,8 +55,6 @@ std::string Interpreter::evaluate_assignable(const Assignable &assignable)
     }
     else if (assignable.type == AssignableType::INVQUOTE)
     {
-        Parser parser;
-
         int pipe_pair[2];
         pipe(pipe_pair);
 
@@ -64,7 +62,7 @@ std::string Interpreter::evaluate_assignable(const Assignable &assignable)
 
         try
         {
-            auto ast = parser.parse(assignable.value);
+            auto ast = parser->parse(assignable.value);
             ast->accept(*this);
         }
         catch (const ParseError &e)
