@@ -1,51 +1,35 @@
 #include "errors.hpp"
 
-ShellError::ShellError()
-{
-}
-
 ShellError::~ShellError()
-{
-}
+= default;
 
-
-ParseError::ParseError()
-{
+ParseError::ParseError(char *message) : ShellError(message) {
 }
 
 ParseError::~ParseError()
-{
-}
+= default;
 
 
-InterpretError::InterpretError()
-{
+InterpretError::InterpretError(char *message) : ShellError(message) {
 }
 
 InterpretError::~InterpretError()
-{
-}
+= default;
 
-AssignmentInterpretError::AssignmentInterpretError()
-{
+AssignmentInterpretError::AssignmentInterpretError(char *message) : InterpretError(message) {
 }
 
 AssignmentInterpretError::~AssignmentInterpretError()
-{
-}
+= default;
 
-AssignmentNameInterpretError::AssignmentNameInterpretError()
-{
+AssignmentNameInterpretError::AssignmentNameInterpretError(char *message) : AssignmentInterpretError(message) {
 }
 
 AssignmentNameInterpretError::~AssignmentNameInterpretError()
-{
-}
+= default;
 
-MemoryAssignmentInterpretError::MemoryAssignmentInterpretError()
-{
+MemoryAssignmentInterpretError::MemoryAssignmentInterpretError(char *message) : AssignmentInterpretError(message) {
 }
 
 MemoryAssignmentInterpretError::~MemoryAssignmentInterpretError()
-{
-}
+= default;

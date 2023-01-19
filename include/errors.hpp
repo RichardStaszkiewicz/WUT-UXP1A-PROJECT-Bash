@@ -5,43 +5,46 @@
 
 class ShellError : public std::exception
 {
+private:
+    char* message;
 public:
-    ShellError();
-    virtual ~ShellError();
+    explicit ShellError(char* message) : message(message) {};
+    char* what() { return message; };
+    ~ShellError() override;
 };
 
 class ParseError : public ShellError
 {
 public:
-    ParseError();
+    explicit ParseError(char* message="");
     ~ParseError() override;
 };
 
 class InterpretError : public ShellError
 {
 public:
-    InterpretError();
+    explicit InterpretError(char *message="");
     ~InterpretError() override;
 };
 
 class AssignmentInterpretError : public InterpretError
 {
 public:
-    AssignmentInterpretError();
+    explicit AssignmentInterpretError(char *message="");
     ~AssignmentInterpretError() override;
 };
 
 class AssignmentNameInterpretError : public AssignmentInterpretError
 {
 public:
-    AssignmentNameInterpretError();
+    explicit AssignmentNameInterpretError(char *message="");
     ~AssignmentNameInterpretError() override;
 };
 
 class MemoryAssignmentInterpretError : public AssignmentInterpretError
 {
 public:
-    MemoryAssignmentInterpretError();
+    explicit MemoryAssignmentInterpretError(char *message="");
     ~MemoryAssignmentInterpretError() override;
 };
 

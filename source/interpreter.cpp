@@ -97,11 +97,11 @@ void Interpreter::execute(Assignment &assignment)
             setenv(assignment.name.c_str(), value.c_str(), 1);
         }
         catch(int num){
-            if(num == EINVAL) throw AssignmentNameInterpretError();
-            if(num == ENOMEM) throw MemoryAssignmentInterpretError();
+            if(num == EINVAL) throw AssignmentNameInterpretError(nullptr);
+            if(num == ENOMEM) throw MemoryAssignmentInterpretError(nullptr);
         }
         catch(...){
-            throw AssignmentInterpretError();
+            throw AssignmentInterpretError(nullptr);
         }
     }
 }
@@ -130,7 +130,7 @@ pid_t Interpreter::execute_command(const Command &command, int input_pipe, int o
         if (redirect_from == -1)
         {
             std::cerr << "Can't open file " << command.redirectFrom << std::endl;
-            throw InterpretError();
+            throw InterpretError(nullptr);
         }
     }
 
@@ -140,7 +140,7 @@ pid_t Interpreter::execute_command(const Command &command, int input_pipe, int o
         if (redirect_to == -1)
         {
             std::cerr << "Can't open file " << command.redirectFrom << std::endl;
-            throw InterpretError();
+            throw InterpretError(nullptr);
         }
     }
 
@@ -295,14 +295,14 @@ void Interpreter::execute(SelfProcessCommand& buildInCommand) {
     }
 
     std::cerr << "Unknown type of build in command" << std::endl;
-    throw InterpretError();
+    throw InterpretError(nullptr);
 }
 
 void Interpreter::executeCdCommand(const std::vector<std::string>& arguments) {
     if (arguments.size() != 1)
     {
         std::cerr << "Invalid number of arguments: expected 1, actual: " << arguments.size() << std::endl;
-        throw InterpretError();
+        throw InterpretError(nullptr);
     }
 
     int result = chdir(arguments[0].c_str());
@@ -313,23 +313,23 @@ void Interpreter::executeCdCommand(const std::vector<std::string>& arguments) {
         {
         case ENOENT:
             std::cerr << "Directory does not exists: " << arguments[0] << std::endl;
-            throw new InterpretError();
+            throw new InterpretError(nullptr);
 
         case ENOTDIR:
             std::cerr << "Path does not p[oint a directory: " << arguments[0] << std::endl;
-            throw new InterpretError();
+            throw new InterpretError(nullptr);
 
         case EACCES:
             std::cerr << "Search permission is denied: " << arguments[0] << std::endl;
-            throw new InterpretError();
+            throw new InterpretError(nullptr);
         
         case ENAMETOOLONG:
             std::cerr << "Path is too long: " << arguments[0] << std::endl;
-            throw new InterpretError();
+            throw new InterpretError(nullptr);
 
         default:
             std::cerr << "Access error: " << arguments[0] << std::endl;
-            throw new InterpretError();
+            throw new InterpretError(nullptr);
         }
     }
 }

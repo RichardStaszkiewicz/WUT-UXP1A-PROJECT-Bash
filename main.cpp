@@ -1,7 +1,8 @@
-#include <map>
+#include "errors.hpp"
 #include "interface.hpp"
 #include "parser.hpp"
 #include "program.hpp"
+#include <map>
 
 
 using t_local_variables = std::map<std::string, std::string>;
@@ -21,7 +22,12 @@ int main(int argc, char *argv[]) {
         {
             terminal.writePrompt();
             parsable_string = terminal.readInput();
-            program.execute(parsable_string);
+            try {
+                program.execute(parsable_string);
+            }
+            catch (ShellError &e) {
+                terminal.writeOutput(e.what());
+            }
         }
     } else {
         terminal.writeOutput("batch\n");
