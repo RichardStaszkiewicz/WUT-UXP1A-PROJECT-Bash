@@ -10,8 +10,6 @@ project(SHELL_UXP1A VERSION 0.1 LANGUAGES CXX)
 
 file(GLOB_RECURSE SRC ${CMAKE_SOURCE_DIR}/source/*.cpp)
 
-find_package(GTest REQUIRED)
-
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib)
 
 include(FetchContent)
