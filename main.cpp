@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
             }
         }
     } else {
-        terminal.writeOutput("batch\n");
+        //terminal.writeOutput("batch\n");
         std::string command;
         for(int i = 1; i < argc; i++) command += argv[i];
         program.execute(command);
